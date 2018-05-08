@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import debounce from 'lodash.debounce';
 // import $ from 'jquery';
 import './style.scss';
 // const $ = require('jquery');
@@ -17,20 +18,27 @@ class App extends Component {
       videos: [],
       selectedVideo: null,
     };
+    this.search = debounce(this.search, 300);
+    this.search('pixar');
+  }
 
-    youtubeSearch('pixar').then((videos) => {
+  search = (text) => {
+    youtubeSearch(text).then((videos) => {
       this.setState({
         videos,
         selectedVideo: videos[0],
       });
     });
-  }
+  };
+
   render() {
     return (
       <div>
-        <SearchBar />
-        <VideoDetail video={this.state.selectedVideo} />
-        <VideoList onVideoSelect={selectedVideo => this.setState({ selectedVideo })} videos={this.state.videos} />
+        <SearchBar onSearchChange={this.search} />
+        <div id="video-section">
+          <VideoDetail video={this.state.selectedVideo} />
+          <VideoList onVideoSelect={selectedVideo => this.setState({ selectedVideo })} videos={this.state.videos} />
+        </div>
       </div>
     );
   }
